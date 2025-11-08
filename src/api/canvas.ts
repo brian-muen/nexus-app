@@ -1,6 +1,6 @@
 // src/api/canvas.ts
 
-const CANVAS_BASE_URL = "https://canvas.princeton.edu/api/v1"; // replace later to support different schools
+const CANVAS_BASE_URL = "https://canvas.princeton.edu/api/v1"; // change per school if needed
 
 // Type definitions
 export interface Course {
@@ -11,13 +11,13 @@ export interface Course {
 export interface Assignment {
   id: number;
   name: string;
-  description: string;
-  due_at: string;
+  description: string | null;
+  due_at: Date | null;
 }
 
-// Fetch all courses for the user
+// Fetch active courses for the user
 export const fetchCourses = async (token: string): Promise<Course[]> => {
-  const res = await fetch(`${CANVAS_BASE_URL}/courses`, {
+  const res = await fetch(`${CANVAS_BASE_URL}/courses?enrollment_state=active`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -25,7 +25,11 @@ export const fetchCourses = async (token: string): Promise<Course[]> => {
 
   if (!res.ok) throw new Error("Failed to fetch courses from Canvas");
 
-  return res.json();
+  const data = await res.json();
+  return data.map((c: any) => ({
+    id: c.id,
+    name: c.name,
+  }));
 };
 
 // Fetch assignments for a specific course
@@ -41,5 +45,11 @@ export const fetchAssignments = async (
 
   if (!res.ok) throw new Error(`Failed to fetch assignments for course ${courseId}`);
 
-  return res.json();
+  const data = await res.json();
+  return data.map((a: any) => ({
+    id: a.id,
+    name: a.name,
+    description: a.description ?? null,
+    due_at: a.due_at ? new Date(a.due_at) : null,
+  }));
 };

@@ -1,5 +1,5 @@
-import React from "react";
 import './App.css'
+import React from 'react'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
 import Dashboard from './components/Dashboard'
@@ -10,6 +10,7 @@ import { useState } from 'react'
 import ErrorBoundary from './components/ErrorBoundary'
 
 function App() {
+  void React
   const { user } = useAuth()
   const [view, setView] = useState<string>('dashboard')
 

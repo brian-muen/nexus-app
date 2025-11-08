@@ -1,10 +1,14 @@
 import React from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { useDispatch } from 'react-redux'
+import { openLogInModal, openSignUpModal } from '../redux/slices/modalSlice'
 
 const Header: React.FC = () => {
   const { user, logout } = useAuth()
 
   const initials = user ? user.split(' ').map(s => s[0]).slice(0,2).join('').toUpperCase() : 'U'
+
+  const dispatch = useDispatch()
 
   return (
     <header className="nx-header">
@@ -20,7 +24,13 @@ const Header: React.FC = () => {
             <div className="nx-avatar">{initials}</div>
           </>
         ) : (
-          <div className="nx-avatar">G</div>
+          <>
+            <div className="flex gap-2 items-center">
+              <button className="nx-btn" onClick={() => dispatch(openLogInModal())}>Log In</button>
+              <button className="nx-btn-outline" onClick={() => dispatch(openSignUpModal())}>Sign Up</button>
+            </div>
+            <div className="nx-avatar">G</div>
+          </>
         )}
       </div>
     </header>
