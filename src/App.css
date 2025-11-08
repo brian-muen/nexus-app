@@ -40,3 +40,87 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Nexus app layout */
+.app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.nx-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.nx-header-left {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+}
+.nx-logo {
+  margin: 0;
+}
+.nx-tagline {
+  margin: 0;
+  color: #aaa;
+  font-size: 0.9rem;
+}
+.nx-header-right {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+.nx-avatar {
+  width: 36px;
+  height: 36px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 8px;
+  background: linear-gradient(135deg,#646cff,#535bf2);
+  color: white;
+  font-weight: 600;
+}
+.nx-btn {
+  padding: 0.45rem 0.8rem;
+  border-radius: 8px;
+  background: #646cff22;
+  border: 1px solid transparent;
+}
+.nx-btn.small { padding: 0.25rem 0.5rem; font-size: 0.9rem }
+
+.app-body {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  flex: 1 1 auto;
+}
+.nx-sidebar {
+  width: 200px;
+  border-right: 1px solid rgba(255,255,255,0.03);
+  padding-right: 1rem;
+}
+.nx-sidebar ul { list-style: none; padding: 0; margin: 0 }
+.nx-sidebar li { padding: 0.6rem 0; cursor: pointer }
+.nx-sidebar li.active { font-weight: 700 }
+
+.app-main { flex: 1 }
+.nx-dashboard { display: grid; grid-template-columns: 1fr 360px; gap: 1rem }
+.nx-section { background: rgba(255,255,255,0.02); padding: 1rem; border-radius: 8px }
+.assignments-list { display: flex; flex-direction: column; gap: 0.75rem }
+.assignment-card { padding: 0.8rem; border-radius: 8px; background: rgba(255,255,255,0.01); box-shadow: 0 1px 0 rgba(255,255,255,0.02) inset }
+.assignment-head { display: flex; justify-content: space-between; align-items: baseline }
+.assignment-due { color: #999; font-size: 0.9rem }
+.assignment-desc { margin: 0.5rem 0 }
+.nx-panel.muted { color: #999; padding: 1rem; border-radius: 8px; background: rgba(255,255,255,0.01) }
+
+@media (max-width: 900px) {
+  .nx-dashboard { grid-template-columns: 1fr }
+  .nx-sidebar { display: none }
+}
+
+/* Sign-in styles */
+.nx-signin { text-align: left; background: rgba(255,255,255,0.01); padding: 2rem; border-radius: 8px }
+.nx-signin h2 { margin-top: 0 }
