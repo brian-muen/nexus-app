@@ -70,7 +70,7 @@ const SignIn: React.FC = () => {
       const sessionToken = data.session?.access_token ?? '';
       const supabaseId = data.user?.id ?? null;
       const displayName = deriveDisplayName(data.user?.email ?? email);
-      login(displayName, sessionToken, supabaseId);
+      login(displayName, sessionToken, supabaseId, data.user?.email ?? email);
       dispatch(closeLogInModal());
       resetFields();
     }
@@ -101,7 +101,7 @@ const SignIn: React.FC = () => {
       resetFields();
 
       if (sessionToken) {
-        login(displayName, sessionToken, supabaseId);
+        login(displayName, sessionToken, supabaseId, data?.user?.email ?? email);
       }
 
       alert(

@@ -4,7 +4,8 @@ interface AuthContextType {
   user: string | null;
   userId: string | null;
   token: string | null;
-  login: (username: string, token: string, userId?: string | null) => void;
+  email: string | null;
+  login: (username: string, token: string, userId?: string | null, email?: string | null) => void;
   logout: () => void;
 }
 
@@ -34,11 +35,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return null;
     }
   });
+  const [email, setEmail] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem('nexus_email');
+    } catch (e) {
+      return null;
+    }
+  });
 
-  const login = (username: string, canvasToken: string, supabaseUserId?: string | null) => {
+  const login = (username: string, canvasToken: string, supabaseUserId?: string | null, userEmail?: string | null) => {
     setUser(username);
     setToken(canvasToken);
     setUserId(supabaseUserId ?? null);
+    setEmail(userEmail ?? null);
     try {
       localStorage.setItem('nexus_user', username);
       localStorage.setItem('nexus_token', canvasToken);
@@ -46,6 +55,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.setItem('nexus_user_id', supabaseUserId);
       } else {
         localStorage.removeItem('nexus_user_id');
+      }
+      if (userEmail) {
+        localStorage.setItem('nexus_email', userEmail);
+      } else {
+        localStorage.removeItem('nexus_email');
       }
     } catch (e) {
       // ignore storage errors
@@ -55,17 +69,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     setToken(null);
     setUserId(null);
+    setEmail(null);
     try {
       localStorage.removeItem('nexus_user');
       localStorage.removeItem('nexus_token');
       localStorage.removeItem('nexus_user_id');
+      localStorage.removeItem('nexus_email');
     } catch (e) {
       // ignore
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, userId, token, login, logout }}>
+    <AuthContext.Provider value={{ user, userId, token, email, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
