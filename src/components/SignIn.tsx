@@ -10,8 +10,15 @@ import {
 } from '../redux/slices/modalSlice';
 // heroicons v2 exports under subpaths
 import { EyeIcon, EyeSlashIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { supabase } from '../supabaseClient';
+import { supabase, SUPABASE_EMAIL_REDIRECT_TO } from '../supabaseClient';
 import { useAuth } from '../contexts/AuthContext';
+
+const deriveDisplayName = (email: string | null | undefined) => {
+  if (!email) return 'User';
+  const [usernamePart] = email.split('@');
+  if (!usernamePart) return email;
+  return usernamePart.replace(/[._-]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+};
 
 const SignIn: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -20,8 +27,6 @@ const SignIn: React.FC = () => {
   const loginOpen = useSelector((state: RootState) => state.modals.logInModalOpen);
   const signUpOpen = useSelector((state: RootState) => state.modals.signUpModalOpen);
   const dispatch = useDispatch<AppDispatch>();
-  // compute supabase config presence directly from Vite env to avoid HMR export race
-  const isSupabaseConfigured = Boolean((import.meta as any).env?.VITE_SUPABASE_URL && (import.meta as any).env?.VITE_SUPABASE_ANON_KEY);
   const { login } = useAuth();
 
   const resetFields = useCallback(() => {
@@ -38,48 +43,72 @@ const SignIn: React.FC = () => {
   }, [loginOpen, signUpOpen, resetFields]);
 
   async function handleLogIn() {
-    if (!isSupabaseConfigured) {
-      // Local/demo fallback when Supabase isn't configured: create a local session
-      login(email, 'local-demo-token');
-      dispatch(closeLogInModal());
-      resetFields();
+    if (!email || !password) {
+      alert('Enter both email and password to log in.');
       return;
     }
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
     if (error) {
       console.error('Login error:', error);
-      alert('Login failed. Please try again.');
+      const message = String(error.message || 'Login failed. Please try again.');
+      if (message.toLowerCase().includes('email')) {
+        try {
+          await supabase.auth.resend({ type: 'signup', email });
+          alert('Your email is not confirmed yet. We just sent a fresh confirmation email—please check your inbox.');
+        } catch (resendError) {
+          console.error('Resend confirmation error:', resendError);
+          alert(`${message}\nIf email confirmation is required, confirm the address in Supabase or resend the link from the dashboard.`);
+        }
+      } else {
+        alert(message);
+      }
     } else {
+      const sessionToken = data.session?.access_token ?? '';
+      const supabaseId = data.user?.id ?? null;
+      const displayName = deriveDisplayName(data.user?.email ?? email);
+      login(displayName, sessionToken, supabaseId);
       dispatch(closeLogInModal());
       resetFields();
     }
   }
 
   async function handleSignUp() {
-    if (!isSupabaseConfigured) {
-      // Demo fallback: create a local account and log in immediately
-      login(email, 'local-demo-token');
-      dispatch(closeSignUpModal());
-      resetFields();
-      alert('Demo account created locally (no confirmation email sent).');
+    if (!email || !password) {
+      alert('Enter both email and password to create an account.');
       return;
     }
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: SUPABASE_EMAIL_REDIRECT_TO,
+      },
     } as any);
     if (error) {
       console.error('Sign up error:', error);
-      alert('Sign up failed. Please try again.');
+      alert(`Sign up failed: ${error.message ?? 'Please try again.'}`);
     } else {
+      const sessionToken = data?.session?.access_token ?? '';
+      const supabaseId = data?.user?.id ?? null;
+      const displayName = deriveDisplayName(data?.user?.email ?? email);
+
       dispatch(closeSignUpModal());
       resetFields();
-      alert('Sign up successful. Check your email to confirm if required.');
+
+      if (sessionToken) {
+        login(displayName, sessionToken, supabaseId);
+      }
+
+      alert(
+        data?.session
+          ? 'Sign up successful! You are now logged in.'
+          : 'Sign up successful. Check your inbox for a confirmation email to finish activating your account.'
+      );
     }
   }
 

@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import * as canvasApi from '../api/canvas'
-import gradescopeApi from '../api/gradescope'
-import { normalizeAny } from '../utils/normalizeAssignments'
+import { supabase } from '@/supabaseClient'
 import type { UnifiedAssignment } from '../utils/normalizeAssignments'
 
-export const useAssignments = () => {
-  const { token } = useAuth()
+export const useAssignments = (refreshSignal = 0) => {
+  const { userId } = useAuth()
   const [assignments, setAssignments] = useState<UnifiedAssignment[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -15,53 +13,35 @@ export const useAssignments = () => {
     let cancelled = false
 
     const load = async () => {
+      if (!userId) {
+        setAssignments([])
+        return
+      }
+
       setLoading(true)
       setError(null)
       try {
-        // Canvas: fetch courses and assignments
-        // Prefer explicit Canvas token saved in settings; fall back to the generic token
-        const canvasToken = localStorage.getItem('nexus_canvas_token') || token || ''
-        const gradescopeToken = localStorage.getItem('nexus_gradescope_token') || token || ''
+        const { data, error: supabaseError } = await supabase
+          .from('canvas_assignments')
+          .select('*')
+          .eq('user_id', userId)
+          .order('due_at', { ascending: true })
 
-        const canvasCourses = await canvasApi.fetchCourses(canvasToken)
-        const canvasPromises = canvasCourses.map(async (c) => {
-          try {
-            const as = await canvasApi.fetchAssignments(c.id, canvasToken)
-            return as.map(a => normalizeAny(a, { source: 'canvas', courseId: c.id }))
-          } catch (e) {
-            return [] as UnifiedAssignment[]
-          }
-        })
+        if (supabaseError) throw supabaseError
 
-        const canvasResults = (await Promise.all(canvasPromises)).flat()
+        const mapped: UnifiedAssignment[] = (data ?? []).map((row: any) => ({
+          id: row.assignment_id ? `canvas:${row.assignment_id}` : `canvas:${row.id}`,
+          source: 'canvas',
+          sourceId: row.assignment_id ?? row.id,
+          courseId: row.canvas_course_id ?? undefined,
+          name: row.name ?? row.title ?? 'Untitled assignment',
+          description: row.description ?? undefined,
+          dueDate: row.due_at ?? null,
+          grade: row.points_possible ?? null,
+          raw: row.raw ?? row,
+        }))
 
-        // Gradescope: try fetching courses then assignments
-        let gsResults: UnifiedAssignment[] = []
-        try {
-          const gsCourses = await gradescopeApi.fetchCourses(gradescopeToken)
-          const gsPromises = gsCourses.map(async (c: any) => {
-            try {
-              const as = await gradescopeApi.fetchAssignments(c.id, gradescopeToken)
-              return as.map((a: any) => normalizeAny(a))
-            } catch (e) {
-              return [] as UnifiedAssignment[]
-            }
-          })
-          gsResults = (await Promise.all(gsPromises)).flat()
-        } catch (e) {
-          // ignore gradescope errors for now
-        }
-
-        const merged = [...canvasResults, ...gsResults]
-
-        // sort by due date (nulls at the end)
-        merged.sort((x, y) => {
-          const dx = x.dueDate ? new Date(x.dueDate).getTime() : Infinity
-          const dy = y.dueDate ? new Date(y.dueDate).getTime() : Infinity
-          return dx - dy
-        })
-
-        if (!cancelled) setAssignments(merged)
+        if (!cancelled) setAssignments(mapped)
       } catch (err: any) {
         if (!cancelled) setError(err?.message ?? String(err))
       } finally {
@@ -69,17 +49,12 @@ export const useAssignments = () => {
       }
     }
 
-    if (token) {
-      load()
-    } else {
-      // clear when no token
-      setAssignments([])
-    }
+    load()
 
     return () => {
       cancelled = true
     }
-  }, [token])
+  }, [userId, refreshSignal])
 
   return { assignments, loading, error }
 }

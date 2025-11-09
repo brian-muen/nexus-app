@@ -10,45 +10,51 @@ import Home from './components/Home'
 import CalendarPage from './pages/CalendarPage'
 import TodoPage from './pages/TodoPage'
 import ChatbotPage from './pages/ChatbotPage'
+import Integrations from './components/Integrations'
+import Assignments from './components/Assignments'
 import { useAuth } from './contexts/AuthContext'
 import ErrorBoundary from './components/ErrorBoundary'
 
 function App() {
-  const { user } = useAuth()
+  const { userId } = useAuth()
   const [view, setView] = useState<string>('dashboard')
+
+  if (!userId) {
+    return (
+      <ErrorBoundary>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/calendar" element={<CalendarPage />} />
+            <Route path="/todo" element={<TodoPage />} />
+            <Route path="/chatbot" element={<ChatbotPage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+          <SignIn />
+        </BrowserRouter>
+      </ErrorBoundary>
+    )
+  }
 
   return (
     <BrowserRouter>
-      {user ? (
-        <div className="app-root">
-          <Header />
-          <div className="app-body">
-            <Sidebar selected={view} onSelect={setView} />
-            <main className="app-main">
-              <ErrorBoundary>
-                {view === 'dashboard' && <Dashboard />}
-                {view === 'settings' && <Settings />}
-                {view !== 'dashboard' && view !== 'settings' && (
-                  <div className="nx-panel muted">View '{view}' not implemented yet.</div>
-                )}
-              </ErrorBoundary>
-            </main>
-          </div>
+      <div className="app-root">
+        <Header />
+        <div className="app-body">
+          <Sidebar selected={view} onSelect={setView} />
+          <main className="app-main">
+            <ErrorBoundary>
+              {view === 'dashboard' && <Dashboard />}
+              {view === 'settings' && <Settings />}
+              {view === 'integrations' && <Integrations />}
+              {view === 'assignments' && <Assignments />}
+              {!['dashboard', 'settings', 'integrations', 'assignments'].includes(view) && (
+                <div className="nx-panel muted">View '{view}' not implemented yet.</div>
+              )}
+            </ErrorBoundary>
+          </main>
         </div>
-      ) : (
-        <ErrorBoundary>
-          <>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/calendar" element={<CalendarPage />} />
-              <Route path="/todo" element={<TodoPage />} />
-              <Route path="/chatbot" element={<ChatbotPage />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-            <SignIn />
-          </>
-        </ErrorBoundary>
-      )}
+      </div>
     </BrowserRouter>
   )
 }

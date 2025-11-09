@@ -42,6 +42,231 @@
   color: #888;
 }
 
+.integrations-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  text-align: left;
+}
+
+.integrations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.integration-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(100, 108, 255, 0.08);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.integration-card header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.nx-link {
+  font-size: 0.85rem;
+  color: #6ec5ff;
+}
+
+.nx-field-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #b9c0ff;
+}
+
+.nx-textarea {
+  width: 100%;
+  resize: vertical;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.2);
+  color: inherit;
+  padding: 0.75rem;
+  font-family: inherit;
+}
+
+.integration-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.nx-success {
+  color: #7dd87d;
+  font-size: 0.85rem;
+}
+
+.nx-error {
+  color: #ff8a8a;
+  font-size: 0.85rem;
+}
+
+.nx-subtle {
+  color: #a3a7cf;
+}
+
+.nx-subtle.small {
+  font-size: 0.8rem;
+}
+
+.assignments-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  text-align: left;
+}
+
+.canvas-sync-panel {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(100, 108, 255, 0.12);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.canvas-sync-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.canvas-sync-card {
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.canvas-sync-card h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.canvas-sync-card p {
+  margin: 0;
+  color: #aeb4e9;
+  font-size: 0.9rem;
+}
+
+.canvas-sync-card .nx-field-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #b9c0ff;
+}
+
+.nx-input {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.2);
+  color: inherit;
+  padding: 0.7rem 0.8rem;
+  font: inherit;
+}
+
+.canvas-sync-card input[type="file"] {
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  padding: 0.6rem;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.canvas-sync-card .sync-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.status-message {
+  font-size: 0.85rem;
+}
+
+.status-message.info {
+  color: #aeb4e9;
+}
+
+.status-message.success {
+  color: #7dd87d;
+}
+
+.status-message.error {
+  color: #ff8a8a;
+}
+
+.assignments-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.assignments-group {
+  border: 1px solid rgba(100, 108, 255, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.group-meta {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: #b0b5e8;
+}
+
+.source-pill {
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.source-pill.canvas {
+  background: rgba(99, 179, 237, 0.2);
+  color: #63b3ed;
+}
+
+.source-pill.gradescope {
+  background: rgba(160, 174, 192, 0.2);
+  color: #a0aec0;
+}
+
+.group-body {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.nx-list {
+  padding-left: 1.25rem;
+  color: #d0d3ff;
+}
+
+.nx-list li {
+  margin-bottom: 0.35rem;
+}
+
 /* Nexus app layout */
 .app-root {
   display: flex;
@@ -89,6 +314,13 @@
   border-radius: 8px;
   background: #646cff22;
   border: 1px solid transparent;
+}
+.nx-btn-outline {
+  padding: 0.45rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: transparent;
+  color: inherit;
 }
 .nx-btn.small { padding: 0.25rem 0.5rem; font-size: 0.9rem }
 

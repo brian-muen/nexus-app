@@ -2,8 +2,9 @@ import React, { createContext, useContext, useState } from 'react';
 
 interface AuthContextType {
   user: string | null;
+  userId: string | null;
   token: string | null;
-  login: (username: string, token: string) => void;
+  login: (username: string, token: string, userId?: string | null) => void;
   logout: () => void;
 }
 
@@ -26,13 +27,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return null;
     }
   });
+  const [userId, setUserId] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem('nexus_user_id');
+    } catch (e) {
+      return null;
+    }
+  });
 
-  const login = (username: string, canvasToken: string) => {
+  const login = (username: string, canvasToken: string, supabaseUserId?: string | null) => {
     setUser(username);
     setToken(canvasToken);
+    setUserId(supabaseUserId ?? null);
     try {
       localStorage.setItem('nexus_user', username);
       localStorage.setItem('nexus_token', canvasToken);
+      if (supabaseUserId) {
+        localStorage.setItem('nexus_user_id', supabaseUserId);
+      } else {
+        localStorage.removeItem('nexus_user_id');
+      }
     } catch (e) {
       // ignore storage errors
     }
@@ -40,16 +54,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     setUser(null);
     setToken(null);
+    setUserId(null);
     try {
       localStorage.removeItem('nexus_user');
       localStorage.removeItem('nexus_token');
+      localStorage.removeItem('nexus_user_id');
     } catch (e) {
       // ignore
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, userId, token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
