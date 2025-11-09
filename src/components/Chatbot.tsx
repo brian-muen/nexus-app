@@ -1,4 +1,5 @@
-import { FormEvent, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
+import type { FormEvent } from 'react'
 import { Wand2, Loader2, AlertCircle } from 'lucide-react'
 import useAssignments from '@/hooks/useAssignments'
 

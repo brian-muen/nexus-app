@@ -1,5 +1,5 @@
 import AnimatedBackground from '@/components/AnimatedBackground';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import LandingHeader from './LandingHeader';
 import LandingFooter from './LandingFooter';
 

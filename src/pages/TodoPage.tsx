@@ -1,7 +1,7 @@
 import { CheckSquare, Sparkles, Timer, GaugeCircle } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import type { AppDispatch } from '@/redux/store';
-import { closeLogInModal, closeSignUpModal, openSignUpModal } from '@/redux/slices/modalSlice';
+import { closeLogInModal, openSignUpModal } from '@/redux/slices/modalSlice';
 import LandingLayout from '@/components/landing/LandingLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

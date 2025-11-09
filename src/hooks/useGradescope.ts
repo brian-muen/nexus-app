@@ -65,7 +65,7 @@ export const useGradescopeAssignments = (): HookState => {
               short_name
             )
           `)
-          .order('due_date', { ascending: true, nullsLast: true })
+          .order('due_date', { ascending: true })
 
         if (supabaseError) {
           throw supabaseError

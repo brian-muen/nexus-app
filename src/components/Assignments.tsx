@@ -19,13 +19,14 @@ const groupByCourse = (assignments: UnifiedAssignment[]) => {
     const course = assignment.raw?.course ?? null;
     const courseId = assignment.courseId ?? course?.id;
     const key = `${assignment.source}:${courseId ?? 'uncategorized'}`;
-    const entry = byCourse.get(key) ?? {
-      courseId,
-      courseName: course?.name ?? null,
-      courseCode: course?.code ?? null,
-      source: assignment.source,
-      items: [],
-    };
+    const entry =
+      byCourse.get(key) ?? {
+        courseId,
+        courseName: course?.name ?? null,
+        courseCode: course?.code ?? null,
+        source: assignment.source,
+        items: [] as UnifiedAssignment[],
+      };
     entry.items.push(assignment);
     byCourse.set(key, entry);
   });
@@ -46,7 +47,13 @@ export default function Assignments() {
   const [reloadKey, setReloadKey] = useState(0);
   const { assignments, loading, error } = useAssignments(reloadKey);
 
-  const sections = useMemo(() => groupByCourse(assignments.filter((a) => a.source === 'canvas')), [assignments]);
+  const sections = useMemo(
+    () =>
+      groupByCourse(
+        assignments.filter((assignment): assignment is UnifiedAssignment => assignment.source === 'canvas'),
+      ),
+    [assignments],
+  );
 
   return (
     <div className="assignments-page">

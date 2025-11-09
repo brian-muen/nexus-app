@@ -30,7 +30,7 @@ export const useAssignments = (refreshSignal = 0) => {
             canvas_courses ( id, code, name ),
             canvas_submissions ( id, grade, submitted_at, canvas_users ( id, name, email ) )
           `)
-          .order('due_date', { ascending: true, nullsLast: true })
+          .order('due_date', { ascending: true })
 
         if (supabaseError) throw supabaseError
 
