@@ -5,13 +5,13 @@ import Header from './components/Header'
 import Sidebar from './components/Sidebar'
 import Dashboard from './components/Dashboard'
 import SignIn from './components/SignIn'
-import Settings from './components/Settings'
 import Home from './components/Home'
 import CalendarPage from './pages/CalendarPage'
 import TodoPage from './pages/TodoPage'
 import ChatbotPage from './pages/ChatbotPage'
-import Integrations from './components/Integrations'
 import Assignments from './components/Assignments'
+import CalendarView from './components/CalendarView'
+import GradesPage from './pages/GradesPage'
 import { useAuth } from './contexts/AuthContext'
 import ErrorBoundary from './components/ErrorBoundary'
 
@@ -45,10 +45,11 @@ function App() {
           <main className="app-main">
             <ErrorBoundary>
               {view === 'dashboard' && <Dashboard />}
-              {view === 'settings' && <Settings />}
-              {view === 'integrations' && <Integrations />}
               {view === 'assignments' && <Assignments />}
-              {!['dashboard', 'settings', 'integrations', 'assignments'].includes(view) && (
+              {view === 'calendar' && <CalendarView />}
+              {view === 'grades' && <GradesPage />}
+              {view === 'chatbot' && <ChatbotPage />}
+              {!['dashboard', 'assignments', 'calendar', 'grades', 'chatbot'].includes(view) && (
                 <div className="nx-panel muted">View '{view}' not implemented yet.</div>
               )}
             </ErrorBoundary>

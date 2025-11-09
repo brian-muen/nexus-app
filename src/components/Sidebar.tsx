@@ -11,8 +11,7 @@ const Sidebar: React.FC<Props> = ({ selected = 'dashboard', onSelect }) => {
     { key: 'assignments', label: 'Assignments' },
     { key: 'calendar', label: 'Calendar' },
     { key: 'grades', label: 'Grades' },
-    { key: 'integrations', label: 'Integrations' },
-    { key: 'settings', label: 'Settings' },
+    { key: 'chatbot', label: 'Chatbot' },
   ]
 
   return (

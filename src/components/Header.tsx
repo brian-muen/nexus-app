@@ -17,7 +17,6 @@ const Header: React.FC = () => {
         <p className="nx-tagline">All your course deadlines in one place</p>
       </div>
       <div className="nx-header-right">
-        <button className="nx-btn">Sync</button>
         {user ? (
           <>
             <button className="nx-btn" onClick={logout}>Logout</button>

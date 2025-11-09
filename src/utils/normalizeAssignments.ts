@@ -14,7 +14,7 @@ export interface UnifiedAssignment {
   raw?: any; // original object for debugging
 }
 
-// Canvas shape (minimal) - matches src/api/canvas.ts
+// Canvas shape (minimal) - matches mock Canvas data rows pulled from Supabase
 export interface CanvasAssignment {
   id: number;
   name: string;
@@ -22,7 +22,7 @@ export interface CanvasAssignment {
   due_at?: string | null;
 }
 
-// Gradescope shape (minimal) - matches src/api/gradescope.ts
+// Gradescope shape (minimal) - legacy support for future integrations
 export interface GradescopeAssignment {
   id: number;
   name: string;

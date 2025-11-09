@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "vite",
     "backend": "node server/index.js",
-    "sync:canvas": "node server/syncCanvasToSupabase.js",
     "build": "tsc -b && vite build",
     "test": "vitest",
     "lint": "eslint .",
@@ -24,7 +23,6 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "lucide-react": "^0.553.0",
-    "node-fetch": "^3.3.2",
     "openai": "^6.8.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

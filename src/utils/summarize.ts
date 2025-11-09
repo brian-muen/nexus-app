@@ -1,25 +1,26 @@
-// Summarization helper. The OpenAI SDK is only imported when running in a
-// server/node environment so that client-side bundles don't attempt to include
-// node-only dependencies.
+const API_BASE = (typeof window !== 'undefined' ? import.meta.env?.VITE_BACKEND_URL : process.env?.VITE_BACKEND_URL) || 'http://localhost:5174';
+
 export const summarizeText = async (text: string) => {
-  // If running in browser, bail out with a friendly message so the UI doesn't crash.
-  if (typeof window !== 'undefined') {
-    return "Summarization unavailable in the browser. Configure a server-side proxy or run summarization on the backend.";
+  const trimmed = text.trim();
+  if (!trimmed) {
+    return 'Overview: No description provided.';
   }
 
-  // Dynamically import the OpenAI SDK on the server only.
-  // This keeps the client bundle free of server-only dependencies.
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const OpenAI = (await import('openai')).default;
-  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-  const response = await client.chat.completions.create({
-    model: 'gpt-4',
-    messages: [
-      { role: 'system', content: 'Summarize the following assignment clearly and concisely.' },
-      { role: 'user', content: text }
-    ],
+  const response = await fetch(`${API_BASE}/api/summarize`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text: trimmed }),
   });
 
-  return response.choices?.[0].message?.content ?? '';
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || 'Summarization request failed.');
+  }
+
+  const payload = (await response.json()) as { summary?: string };
+  if (!payload.summary) {
+    throw new Error('Summarization returned an empty response.');
+  }
+
+  return payload.summary;
 };
