@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Modal } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '../redux/store';
@@ -24,20 +24,25 @@ const SignIn: React.FC = () => {
   const isSupabaseConfigured = Boolean((import.meta as any).env?.VITE_SUPABASE_URL && (import.meta as any).env?.VITE_SUPABASE_ANON_KEY);
   const { login } = useAuth();
 
+  const resetFields = useCallback(() => {
+    setEmail('');
+    setPassword('');
+    setShowPassword(false);
+  }, []);
+
   // Clear fields whenever the modal opens (either login or sign up)
   useEffect(() => {
     if (loginOpen || signUpOpen) {
-      setEmail('');
-      setPassword('');
-      setShowPassword(false);
+      resetFields();
     }
-  }, [loginOpen, signUpOpen]);
+  }, [loginOpen, signUpOpen, resetFields]);
 
   async function handleLogIn() {
     if (!isSupabaseConfigured) {
       // Local/demo fallback when Supabase isn't configured: create a local session
       login(email, 'local-demo-token');
       dispatch(closeLogInModal());
+      resetFields();
       return;
     }
 
@@ -50,6 +55,7 @@ const SignIn: React.FC = () => {
       alert('Login failed. Please try again.');
     } else {
       dispatch(closeLogInModal());
+      resetFields();
     }
   }
 
@@ -58,6 +64,7 @@ const SignIn: React.FC = () => {
       // Demo fallback: create a local account and log in immediately
       login(email, 'local-demo-token');
       dispatch(closeSignUpModal());
+      resetFields();
       alert('Demo account created locally (no confirmation email sent).');
       return;
     }
@@ -71,32 +78,19 @@ const SignIn: React.FC = () => {
       alert('Sign up failed. Please try again.');
     } else {
       dispatch(closeSignUpModal());
+      resetFields();
       alert('Sign up successful. Check your email to confirm if required.');
     }
   }
 
   return (
     <>
-      <div className="flex gap-3">
-        <button
-          className="w-full md:w-[120px] h-[48px] md:h-[40px] text-md md:text-sm rounded-full text-white font-bold bg-blue-700 hover:bg-blue-800 transition"
-          onClick={() => dispatch(openLogInModal())}
-        >
-          Log In
-        </button>
-        <button
-          className="hidden md:inline-block md:w-[120px] h-[48px] md:h-[40px] text-md md:text-sm rounded-full text-blue-700 font-bold border-2 border-blue-700 bg-white hover:bg-blue-50 transition"
-          onClick={() => dispatch(openSignUpModal())}
-        >
-          Sign Up
-        </button>
-      </div>
-
       <Modal
         open={loginOpen || signUpOpen}
         onClose={() => {
           dispatch(closeLogInModal());
           dispatch(closeSignUpModal());
+          resetFields();
         }}
         className="flex justify-center items-center"
       >
@@ -106,6 +100,7 @@ const SignIn: React.FC = () => {
             onClick={() => {
               dispatch(closeLogInModal());
               dispatch(closeSignUpModal());
+              resetFields();
             }}
           />
           <div className="pt-10 pb-20 px-4 sm:px-20">
@@ -138,11 +133,44 @@ const SignIn: React.FC = () => {
                 </div>
               </div>
               <button
-                className="font-bold bg-blue-700 text-white h-[48px] rounded-full shadow-md mb-5 w-full hover:cursor-pointer"
+                className="font-bold bg-linear-to-r from-cyan-400 to-cyan-600 text-white h-[48px] rounded-full shadow-md mb-5 w-full hover:from-cyan-500 hover:to-cyan-700 hover:cursor-pointer"
                 onClick={signUpOpen ? handleSignUp : handleLogIn}
               >
                 {signUpOpen ? 'Create account' : 'Log In'}
               </button>
+              <div className="text-center text-sm text-gray-900">
+                {signUpOpen ? (
+                  <>
+                    Already have an account?{' '}
+                    <button
+                      type="button"
+                      className="font-semibold text-blue-600 hover:text-blue-700 focus-visible:outline-none focus-visible:ring-0"
+                      onClick={() => {
+                        resetFields();
+                        dispatch(closeSignUpModal());
+                        dispatch(openLogInModal());
+                      }}
+                    >
+                      Log in
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    Don't have an account?{' '}
+                    <button
+                      type="button"
+                      className="font-semibold text-blue-600 hover:text-blue-700 focus-visible:outline-none focus-visible:ring-0"
+                      onClick={() => {
+                        resetFields();
+                        dispatch(closeLogInModal());
+                        dispatch(openSignUpModal());
+                      }}
+                    >
+                      Sign up
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
