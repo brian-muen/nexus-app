@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "build": "vite build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
     "backend": "node server/index.js",
-    "build": "tsc -b && vite build",
     "test": "vitest",
     "lint": "eslint .",
     "preview": "vite preview"
